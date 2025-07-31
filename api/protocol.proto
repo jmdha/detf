@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package protocol;
+option go_package = "/protocol";
+
+service DETF {
+  rpc Stream(stream Result) returns (stream Match) {}
+}
+
+message Match {
+  string ID       = 1;
+  Engine A        = 2;
+  Engine B        = 3;
+  string Position = 4;
+}
+
+message Result {
+  string ID = 1;
+}
+
+message Engine {
+  string ID = 1;
+}
