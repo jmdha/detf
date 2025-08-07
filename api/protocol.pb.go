@@ -23,10 +23,8 @@ const (
 
 type Match struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ID            string                 `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	A             *Engine                `protobuf:"bytes,2,opt,name=A,proto3" json:"A,omitempty"`
-	B             *Engine                `protobuf:"bytes,3,opt,name=B,proto3" json:"B,omitempty"`
-	Position      string                 `protobuf:"bytes,4,opt,name=Position,proto3" json:"Position,omitempty"`
+	ID            uint64                 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Position      string                 `protobuf:"bytes,2,opt,name=Position,proto3" json:"Position,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -61,25 +59,11 @@ func (*Match) Descriptor() ([]byte, []int) {
 	return file_api_protocol_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Match) GetID() string {
+func (x *Match) GetID() uint64 {
 	if x != nil {
 		return x.ID
 	}
-	return ""
-}
-
-func (x *Match) GetA() *Engine {
-	if x != nil {
-		return x.A
-	}
-	return nil
-}
-
-func (x *Match) GetB() *Engine {
-	if x != nil {
-		return x.B
-	}
-	return nil
+	return 0
 }
 
 func (x *Match) GetPosition() string {
@@ -91,7 +75,9 @@ func (x *Match) GetPosition() string {
 
 type Result struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ID            string                 `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	ID            uint64                 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Win           bool                   `protobuf:"varint,2,opt,name=Win,proto3" json:"Win,omitempty"`
+	Draw          bool                   `protobuf:"varint,3,opt,name=Draw,proto3" json:"Draw,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -126,71 +112,39 @@ func (*Result) Descriptor() ([]byte, []int) {
 	return file_api_protocol_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *Result) GetID() string {
+func (x *Result) GetID() uint64 {
 	if x != nil {
 		return x.ID
 	}
-	return ""
+	return 0
 }
 
-type Engine struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ID            string                 `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Engine) Reset() {
-	*x = Engine{}
-	mi := &file_api_protocol_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Engine) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Engine) ProtoMessage() {}
-
-func (x *Engine) ProtoReflect() protoreflect.Message {
-	mi := &file_api_protocol_proto_msgTypes[2]
+func (x *Result) GetWin() bool {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+		return x.Win
 	}
-	return mi.MessageOf(x)
+	return false
 }
 
-// Deprecated: Use Engine.ProtoReflect.Descriptor instead.
-func (*Engine) Descriptor() ([]byte, []int) {
-	return file_api_protocol_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *Engine) GetID() string {
+func (x *Result) GetDraw() bool {
 	if x != nil {
-		return x.ID
+		return x.Draw
 	}
-	return ""
+	return false
 }
 
 var File_api_protocol_proto protoreflect.FileDescriptor
 
 const file_api_protocol_proto_rawDesc = "" +
 	"\n" +
-	"\x12api/protocol.proto\x12\bprotocol\"s\n" +
+	"\x12api/protocol.proto\x12\bprotocol\"3\n" +
 	"\x05Match\x12\x0e\n" +
-	"\x02ID\x18\x01 \x01(\tR\x02ID\x12\x1e\n" +
-	"\x01A\x18\x02 \x01(\v2\x10.protocol.EngineR\x01A\x12\x1e\n" +
-	"\x01B\x18\x03 \x01(\v2\x10.protocol.EngineR\x01B\x12\x1a\n" +
-	"\bPosition\x18\x04 \x01(\tR\bPosition\"\x18\n" +
+	"\x02ID\x18\x01 \x01(\x04R\x02ID\x12\x1a\n" +
+	"\bPosition\x18\x02 \x01(\tR\bPosition\">\n" +
 	"\x06Result\x12\x0e\n" +
-	"\x02ID\x18\x01 \x01(\tR\x02ID\"\x18\n" +
-	"\x06Engine\x12\x0e\n" +
-	"\x02ID\x18\x01 \x01(\tR\x02ID29\n" +
+	"\x02ID\x18\x01 \x01(\x04R\x02ID\x12\x10\n" +
+	"\x03Win\x18\x02 \x01(\bR\x03Win\x12\x12\n" +
+	"\x04Draw\x18\x03 \x01(\bR\x04Draw29\n" +
 	"\x04DETF\x121\n" +
 	"\x06Stream\x12\x10.protocol.Result\x1a\x0f.protocol.Match\"\x00(\x010\x01B\vZ\t/protocolb\x06proto3"
 
@@ -206,22 +160,19 @@ func file_api_protocol_proto_rawDescGZIP() []byte {
 	return file_api_protocol_proto_rawDescData
 }
 
-var file_api_protocol_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_api_protocol_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_api_protocol_proto_goTypes = []any{
 	(*Match)(nil),  // 0: protocol.Match
 	(*Result)(nil), // 1: protocol.Result
-	(*Engine)(nil), // 2: protocol.Engine
 }
 var file_api_protocol_proto_depIdxs = []int32{
-	2, // 0: protocol.Match.A:type_name -> protocol.Engine
-	2, // 1: protocol.Match.B:type_name -> protocol.Engine
-	1, // 2: protocol.DETF.Stream:input_type -> protocol.Result
-	0, // 3: protocol.DETF.Stream:output_type -> protocol.Match
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	1, // 0: protocol.DETF.Stream:input_type -> protocol.Result
+	0, // 1: protocol.DETF.Stream:output_type -> protocol.Match
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_api_protocol_proto_init() }
@@ -235,7 +186,7 @@ func file_api_protocol_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_protocol_proto_rawDesc), len(file_api_protocol_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

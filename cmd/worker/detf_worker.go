@@ -36,7 +36,9 @@ func main() {
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
-		log.Printf("%s | %s", in.ID, in.Position)
+		stream.Send(&pb.Result {
+			ID: in.ID,
+		})
 	}
 }
 

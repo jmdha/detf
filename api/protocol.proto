@@ -8,16 +8,12 @@ service DETF {
 }
 
 message Match {
-  string ID       = 1;
-  Engine A        = 2;
-  Engine B        = 3;
-  string Position = 4;
+  uint64 ID       = 1;
+  string Position = 2;
 }
 
 message Result {
-  string ID = 1;
-}
-
-message Engine {
-  string ID = 1;
+  uint64 ID   = 1;
+  bool   Win  = 2;
+  bool   Draw = 3;
 }

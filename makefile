@@ -13,3 +13,6 @@ proto:
 	--go-grpc_out=. \
 	--go-grpc_opt=paths=source_relative \
 	api/*.proto
+
+test:
+	go test -v ./...
