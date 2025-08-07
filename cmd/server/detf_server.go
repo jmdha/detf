@@ -8,6 +8,8 @@ import (
 	"io"
 	"bufio"
 	"os"
+	"flag"
+	"fmt"
 
 	"google.golang.org/grpc"
 	pb "detf/api"
@@ -130,7 +132,10 @@ func LoadBook(path string) {
 }
 
 func main() {
-	LoadBook("books/UHO_4060_v4.epd")
+	book_path := flag.String("b", "", "path to opening book")
+	port := flag.Int("p", 8080, "port to operate on")
+	flag.Parse()
+	LoadBook(*book_path)
 	tests = append(tests, test {
 		active: true,
 		id:     0,
@@ -139,7 +144,7 @@ func main() {
 		draws:  0,
 		book:   0,
 	})
-	lis, err := net.Listen("tcp", ":8080")
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
