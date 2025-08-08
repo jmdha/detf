@@ -1,10 +1,12 @@
 all: proto server worker
 
 server:
-	go build cmd/server/detf_server.go
+	go build -o detf_server \
+	         cmd/server/*.go
 
 worker:
-	go build cmd/worker/detf_worker.go
+	go build -o detf_worker \
+		 cmd/worker/*.go
 
 proto:
 	protoc \
