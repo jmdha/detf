@@ -23,8 +23,10 @@ const (
 
 type Match struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ID            uint64                 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	Position      string                 `protobuf:"bytes,2,opt,name=Position,proto3" json:"Position,omitempty"`
+	Repo          string                 `protobuf:"bytes,1,opt,name=Repo,proto3" json:"Repo,omitempty"`
+	Ref           string                 `protobuf:"bytes,2,opt,name=Ref,proto3" json:"Ref,omitempty"`
+	Pos           string                 `protobuf:"bytes,3,opt,name=Pos,proto3" json:"Pos,omitempty"`
+	Turn          bool                   `protobuf:"varint,4,opt,name=Turn,proto3" json:"Turn,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -59,25 +61,40 @@ func (*Match) Descriptor() ([]byte, []int) {
 	return file_api_protocol_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Match) GetID() uint64 {
+func (x *Match) GetRepo() string {
 	if x != nil {
-		return x.ID
-	}
-	return 0
-}
-
-func (x *Match) GetPosition() string {
-	if x != nil {
-		return x.Position
+		return x.Repo
 	}
 	return ""
 }
 
+func (x *Match) GetRef() string {
+	if x != nil {
+		return x.Ref
+	}
+	return ""
+}
+
+func (x *Match) GetPos() string {
+	if x != nil {
+		return x.Pos
+	}
+	return ""
+}
+
+func (x *Match) GetTurn() bool {
+	if x != nil {
+		return x.Turn
+	}
+	return false
+}
+
 type Result struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ID            uint64                 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	Win           bool                   `protobuf:"varint,2,opt,name=Win,proto3" json:"Win,omitempty"`
-	Draw          bool                   `protobuf:"varint,3,opt,name=Draw,proto3" json:"Draw,omitempty"`
+	Repo          string                 `protobuf:"bytes,1,opt,name=Repo,proto3" json:"Repo,omitempty"`
+	Ref           string                 `protobuf:"bytes,2,opt,name=Ref,proto3" json:"Ref,omitempty"`
+	Win           bool                   `protobuf:"varint,3,opt,name=Win,proto3" json:"Win,omitempty"`
+	Draw          bool                   `protobuf:"varint,4,opt,name=Draw,proto3" json:"Draw,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -112,11 +129,18 @@ func (*Result) Descriptor() ([]byte, []int) {
 	return file_api_protocol_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *Result) GetID() uint64 {
+func (x *Result) GetRepo() string {
 	if x != nil {
-		return x.ID
+		return x.Repo
 	}
-	return 0
+	return ""
+}
+
+func (x *Result) GetRef() string {
+	if x != nil {
+		return x.Ref
+	}
+	return ""
 }
 
 func (x *Result) GetWin() bool {
@@ -137,14 +161,17 @@ var File_api_protocol_proto protoreflect.FileDescriptor
 
 const file_api_protocol_proto_rawDesc = "" +
 	"\n" +
-	"\x12api/protocol.proto\x12\bprotocol\"3\n" +
-	"\x05Match\x12\x0e\n" +
-	"\x02ID\x18\x01 \x01(\x04R\x02ID\x12\x1a\n" +
-	"\bPosition\x18\x02 \x01(\tR\bPosition\">\n" +
-	"\x06Result\x12\x0e\n" +
-	"\x02ID\x18\x01 \x01(\x04R\x02ID\x12\x10\n" +
-	"\x03Win\x18\x02 \x01(\bR\x03Win\x12\x12\n" +
-	"\x04Draw\x18\x03 \x01(\bR\x04Draw29\n" +
+	"\x12api/protocol.proto\x12\bprotocol\"S\n" +
+	"\x05Match\x12\x12\n" +
+	"\x04Repo\x18\x01 \x01(\tR\x04Repo\x12\x10\n" +
+	"\x03Ref\x18\x02 \x01(\tR\x03Ref\x12\x10\n" +
+	"\x03Pos\x18\x03 \x01(\tR\x03Pos\x12\x12\n" +
+	"\x04Turn\x18\x04 \x01(\bR\x04Turn\"T\n" +
+	"\x06Result\x12\x12\n" +
+	"\x04Repo\x18\x01 \x01(\tR\x04Repo\x12\x10\n" +
+	"\x03Ref\x18\x02 \x01(\tR\x03Ref\x12\x10\n" +
+	"\x03Win\x18\x03 \x01(\bR\x03Win\x12\x12\n" +
+	"\x04Draw\x18\x04 \x01(\bR\x04Draw29\n" +
 	"\x04DETF\x121\n" +
 	"\x06Stream\x12\x10.protocol.Result\x1a\x0f.protocol.Match\"\x00(\x010\x01B\vZ\t/protocolb\x06proto3"
 

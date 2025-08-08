@@ -17,12 +17,15 @@ type Server struct {
 func SendMatch(
 	stream pb.DETF_StreamServer,
 ) error {
-	initial_match, err := NextMatch()
+	match, err := NextMatch()
 	if err != nil {
 		return err
 	}
 	stream.Send(&pb.Match {
-		ID: initial_match.id,
+		Repo: match.repo,
+		Ref:  match.ref,
+		Pos:  match.pos,
+		Turn: match.turn,
 	})
 	return nil
 }
@@ -44,11 +47,12 @@ func (s *Server) Stream(
 		if err != nil {
 			return err
 		}
-		HandleResult(
-			result {
-				id: in.ID,
-			},
-		)
+		HandleResult(Result {
+			repo: in.GetRepo(),
+			ref:  in.GetRef(),
+			win:  in.GetWin(),
+			draw: in.GetDraw(),
+		})
 		{
 			err := SendMatch(stream)
 			if err != nil {

@@ -37,7 +37,10 @@ func main() {
 			log.Fatalf("%v", err)
 		}
 		stream.Send(&pb.Result {
-			ID: in.ID,
+			Repo: in.Repo,
+			Ref:  in.Ref,
+			Win:  true,
+			Draw: false,
 		})
 	}
 }

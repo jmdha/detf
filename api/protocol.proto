@@ -8,12 +8,15 @@ service DETF {
 }
 
 message Match {
-  uint64 ID       = 1;
-  string Position = 2;
+  string Repo = 1;
+  string Ref  = 2;
+  string Pos  = 3;
+  bool   Turn = 4;
 }
 
 message Result {
-  uint64 ID   = 1;
-  bool   Win  = 2;
-  bool   Draw = 3;
+  string Repo = 1;
+  string Ref  = 2;
+  bool   Win  = 3;
+  bool   Draw = 4;
 }
