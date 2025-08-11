@@ -1,46 +1,51 @@
 package main
 
 import (
+	"flag"
 	"log"
-	"context"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
-	"io"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	pb "detf/api"
 )
 
 func main() {
-	conn, err := grpc.NewClient(
-		"localhost:8080",
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-	defer conn.Close()
-	client := pb.NewDETFClient(conn)
+	var ip        string
+	var processes int
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
-	defer cancel()
-	stream, sErr := client.Stream(ctx)
-	if sErr != nil {
-		log.Fatalf("%v", sErr)
+	// Load commad line arguments
+	flag.StringVar(&ip,     "i", "localhost:8080", "which ip to connect to")
+	flag.IntVar(&processes, "p", 1,                "how many processes")
+	flag.Parse()
+
+	// Initialize
+	InitClient(ip)
+
+	// Start processes
+	for range processes {
+		go run()
 	}
+
+	// Run untill exit signal
+	sig := make(chan os.Signal)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+	<-sig
+}
+
+func run() {
 	for {
-		in, err := stream.Recv()
-		if err == io.EOF {
-			return
-		}
+		match, err := RequestMatch()
 		if err != nil {
-			log.Fatalf("%v", err)
+			log.Printf("Failed to retrieve match with error: %v", err)
+			time.Sleep(time.Minute)
+			continue
 		}
-		stream.Send(&pb.Result {
-			Repo: in.Repo,
-			Ref:  in.Ref,
-			Win:  true,
-			Draw: false,
-		})
+		result, err := Sim(match)
+		if err != nil {
+			log.Printf("Failed to simulate match with error: %v", err)
+			time.Sleep(time.Minute)
+			continue
+		}
+		SendResult(result)
 	}
 }

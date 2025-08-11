@@ -21,10 +21,98 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Match struct {
+type Empty struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Empty) Reset() {
+	*x = Empty{}
+	mi := &file_api_protocol_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Empty) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Empty) ProtoMessage() {}
+
+func (x *Empty) ProtoReflect() protoreflect.Message {
+	mi := &file_api_protocol_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Empty.ProtoReflect.Descriptor instead.
+func (*Empty) Descriptor() ([]byte, []int) {
+	return file_api_protocol_proto_rawDescGZIP(), []int{0}
+}
+
+type Engine struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Repo          string                 `protobuf:"bytes,1,opt,name=Repo,proto3" json:"Repo,omitempty"`
 	Ref           string                 `protobuf:"bytes,2,opt,name=Ref,proto3" json:"Ref,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Engine) Reset() {
+	*x = Engine{}
+	mi := &file_api_protocol_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Engine) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Engine) ProtoMessage() {}
+
+func (x *Engine) ProtoReflect() protoreflect.Message {
+	mi := &file_api_protocol_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Engine.ProtoReflect.Descriptor instead.
+func (*Engine) Descriptor() ([]byte, []int) {
+	return file_api_protocol_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Engine) GetRepo() string {
+	if x != nil {
+		return x.Repo
+	}
+	return ""
+}
+
+func (x *Engine) GetRef() string {
+	if x != nil {
+		return x.Ref
+	}
+	return ""
+}
+
+type Match struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Baseline      *Engine                `protobuf:"bytes,1,opt,name=Baseline,proto3" json:"Baseline,omitempty"`
+	Candidate     *Engine                `protobuf:"bytes,2,opt,name=Candidate,proto3" json:"Candidate,omitempty"`
 	Pos           string                 `protobuf:"bytes,3,opt,name=Pos,proto3" json:"Pos,omitempty"`
 	Turn          bool                   `protobuf:"varint,4,opt,name=Turn,proto3" json:"Turn,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -33,7 +121,7 @@ type Match struct {
 
 func (x *Match) Reset() {
 	*x = Match{}
-	mi := &file_api_protocol_proto_msgTypes[0]
+	mi := &file_api_protocol_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +133,7 @@ func (x *Match) String() string {
 func (*Match) ProtoMessage() {}
 
 func (x *Match) ProtoReflect() protoreflect.Message {
-	mi := &file_api_protocol_proto_msgTypes[0]
+	mi := &file_api_protocol_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,21 +146,21 @@ func (x *Match) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Match.ProtoReflect.Descriptor instead.
 func (*Match) Descriptor() ([]byte, []int) {
-	return file_api_protocol_proto_rawDescGZIP(), []int{0}
+	return file_api_protocol_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *Match) GetRepo() string {
+func (x *Match) GetBaseline() *Engine {
 	if x != nil {
-		return x.Repo
+		return x.Baseline
 	}
-	return ""
+	return nil
 }
 
-func (x *Match) GetRef() string {
+func (x *Match) GetCandidate() *Engine {
 	if x != nil {
-		return x.Ref
+		return x.Candidate
 	}
-	return ""
+	return nil
 }
 
 func (x *Match) GetPos() string {
@@ -91,8 +179,8 @@ func (x *Match) GetTurn() bool {
 
 type Result struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Repo          string                 `protobuf:"bytes,1,opt,name=Repo,proto3" json:"Repo,omitempty"`
-	Ref           string                 `protobuf:"bytes,2,opt,name=Ref,proto3" json:"Ref,omitempty"`
+	Baseline      *Engine                `protobuf:"bytes,1,opt,name=Baseline,proto3" json:"Baseline,omitempty"`
+	Candidate     *Engine                `protobuf:"bytes,2,opt,name=Candidate,proto3" json:"Candidate,omitempty"`
 	Win           bool                   `protobuf:"varint,3,opt,name=Win,proto3" json:"Win,omitempty"`
 	Draw          bool                   `protobuf:"varint,4,opt,name=Draw,proto3" json:"Draw,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -101,7 +189,7 @@ type Result struct {
 
 func (x *Result) Reset() {
 	*x = Result{}
-	mi := &file_api_protocol_proto_msgTypes[1]
+	mi := &file_api_protocol_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -113,7 +201,7 @@ func (x *Result) String() string {
 func (*Result) ProtoMessage() {}
 
 func (x *Result) ProtoReflect() protoreflect.Message {
-	mi := &file_api_protocol_proto_msgTypes[1]
+	mi := &file_api_protocol_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -126,21 +214,21 @@ func (x *Result) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Result.ProtoReflect.Descriptor instead.
 func (*Result) Descriptor() ([]byte, []int) {
-	return file_api_protocol_proto_rawDescGZIP(), []int{1}
+	return file_api_protocol_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *Result) GetRepo() string {
+func (x *Result) GetBaseline() *Engine {
 	if x != nil {
-		return x.Repo
+		return x.Baseline
 	}
-	return ""
+	return nil
 }
 
-func (x *Result) GetRef() string {
+func (x *Result) GetCandidate() *Engine {
 	if x != nil {
-		return x.Ref
+		return x.Candidate
 	}
-	return ""
+	return nil
 }
 
 func (x *Result) GetWin() bool {
@@ -161,19 +249,25 @@ var File_api_protocol_proto protoreflect.FileDescriptor
 
 const file_api_protocol_proto_rawDesc = "" +
 	"\n" +
-	"\x12api/protocol.proto\x12\bprotocol\"S\n" +
-	"\x05Match\x12\x12\n" +
+	"\x12api/protocol.proto\x12\bprotocol\"\a\n" +
+	"\x05Empty\".\n" +
+	"\x06Engine\x12\x12\n" +
 	"\x04Repo\x18\x01 \x01(\tR\x04Repo\x12\x10\n" +
-	"\x03Ref\x18\x02 \x01(\tR\x03Ref\x12\x10\n" +
+	"\x03Ref\x18\x02 \x01(\tR\x03Ref\"\x8b\x01\n" +
+	"\x05Match\x12,\n" +
+	"\bBaseline\x18\x01 \x01(\v2\x10.protocol.EngineR\bBaseline\x12.\n" +
+	"\tCandidate\x18\x02 \x01(\v2\x10.protocol.EngineR\tCandidate\x12\x10\n" +
 	"\x03Pos\x18\x03 \x01(\tR\x03Pos\x12\x12\n" +
-	"\x04Turn\x18\x04 \x01(\bR\x04Turn\"T\n" +
-	"\x06Result\x12\x12\n" +
-	"\x04Repo\x18\x01 \x01(\tR\x04Repo\x12\x10\n" +
-	"\x03Ref\x18\x02 \x01(\tR\x03Ref\x12\x10\n" +
+	"\x04Turn\x18\x04 \x01(\bR\x04Turn\"\x8c\x01\n" +
+	"\x06Result\x12,\n" +
+	"\bBaseline\x18\x01 \x01(\v2\x10.protocol.EngineR\bBaseline\x12.\n" +
+	"\tCandidate\x18\x02 \x01(\v2\x10.protocol.EngineR\tCandidate\x12\x10\n" +
 	"\x03Win\x18\x03 \x01(\bR\x03Win\x12\x12\n" +
-	"\x04Draw\x18\x04 \x01(\bR\x04Draw29\n" +
-	"\x04DETF\x121\n" +
-	"\x06Stream\x12\x10.protocol.Result\x1a\x0f.protocol.Match\"\x00(\x010\x01B\vZ\t/protocolb\x06proto3"
+	"\x04Draw\x18\x04 \x01(\bR\x04Draw2m\n" +
+	"\x04DETF\x122\n" +
+	"\fRequestMatch\x12\x0f.protocol.Empty\x1a\x0f.protocol.Match\"\x00\x121\n" +
+	"\n" +
+	"SendResult\x12\x10.protocol.Result\x1a\x0f.protocol.Empty\"\x00B\vZ\t/protocolb\x06proto3"
 
 var (
 	file_api_protocol_proto_rawDescOnce sync.Once
@@ -187,19 +281,27 @@ func file_api_protocol_proto_rawDescGZIP() []byte {
 	return file_api_protocol_proto_rawDescData
 }
 
-var file_api_protocol_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_api_protocol_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_api_protocol_proto_goTypes = []any{
-	(*Match)(nil),  // 0: protocol.Match
-	(*Result)(nil), // 1: protocol.Result
+	(*Empty)(nil),  // 0: protocol.Empty
+	(*Engine)(nil), // 1: protocol.Engine
+	(*Match)(nil),  // 2: protocol.Match
+	(*Result)(nil), // 3: protocol.Result
 }
 var file_api_protocol_proto_depIdxs = []int32{
-	1, // 0: protocol.DETF.Stream:input_type -> protocol.Result
-	0, // 1: protocol.DETF.Stream:output_type -> protocol.Match
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	1, // 0: protocol.Match.Baseline:type_name -> protocol.Engine
+	1, // 1: protocol.Match.Candidate:type_name -> protocol.Engine
+	1, // 2: protocol.Result.Baseline:type_name -> protocol.Engine
+	1, // 3: protocol.Result.Candidate:type_name -> protocol.Engine
+	0, // 4: protocol.DETF.RequestMatch:input_type -> protocol.Empty
+	3, // 5: protocol.DETF.SendResult:input_type -> protocol.Result
+	2, // 6: protocol.DETF.RequestMatch:output_type -> protocol.Match
+	0, // 7: protocol.DETF.SendResult:output_type -> protocol.Empty
+	6, // [6:8] is the sub-list for method output_type
+	4, // [4:6] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_api_protocol_proto_init() }
@@ -213,7 +315,7 @@ func file_api_protocol_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_protocol_proto_rawDesc), len(file_api_protocol_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

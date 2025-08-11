@@ -19,14 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	DETF_Stream_FullMethodName = "/protocol.DETF/Stream"
+	DETF_RequestMatch_FullMethodName = "/protocol.DETF/RequestMatch"
+	DETF_SendResult_FullMethodName   = "/protocol.DETF/SendResult"
 )
 
 // DETFClient is the client API for DETF service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DETFClient interface {
-	Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[Result, Match], error)
+	RequestMatch(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Match, error)
+	SendResult(ctx context.Context, in *Result, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type dETFClient struct {
@@ -37,24 +39,32 @@ func NewDETFClient(cc grpc.ClientConnInterface) DETFClient {
 	return &dETFClient{cc}
 }
 
-func (c *dETFClient) Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[Result, Match], error) {
+func (c *dETFClient) RequestMatch(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Match, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &DETF_ServiceDesc.Streams[0], DETF_Stream_FullMethodName, cOpts...)
+	out := new(Match)
+	err := c.cc.Invoke(ctx, DETF_RequestMatch_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[Result, Match]{ClientStream: stream}
-	return x, nil
+	return out, nil
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type DETF_StreamClient = grpc.BidiStreamingClient[Result, Match]
+func (c *dETFClient) SendResult(ctx context.Context, in *Result, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, DETF_SendResult_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
 
 // DETFServer is the server API for DETF service.
 // All implementations must embed UnimplementedDETFServer
 // for forward compatibility.
 type DETFServer interface {
-	Stream(grpc.BidiStreamingServer[Result, Match]) error
+	RequestMatch(context.Context, *Empty) (*Match, error)
+	SendResult(context.Context, *Result) (*Empty, error)
 	mustEmbedUnimplementedDETFServer()
 }
 
@@ -65,8 +75,11 @@ type DETFServer interface {
 // pointer dereference when methods are called.
 type UnimplementedDETFServer struct{}
 
-func (UnimplementedDETFServer) Stream(grpc.BidiStreamingServer[Result, Match]) error {
-	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
+func (UnimplementedDETFServer) RequestMatch(context.Context, *Empty) (*Match, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestMatch not implemented")
+}
+func (UnimplementedDETFServer) SendResult(context.Context, *Result) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendResult not implemented")
 }
 func (UnimplementedDETFServer) mustEmbedUnimplementedDETFServer() {}
 func (UnimplementedDETFServer) testEmbeddedByValue()              {}
@@ -89,12 +102,41 @@ func RegisterDETFServer(s grpc.ServiceRegistrar, srv DETFServer) {
 	s.RegisterService(&DETF_ServiceDesc, srv)
 }
 
-func _DETF_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(DETFServer).Stream(&grpc.GenericServerStream[Result, Match]{ServerStream: stream})
+func _DETF_RequestMatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DETFServer).RequestMatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DETF_RequestMatch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DETFServer).RequestMatch(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type DETF_StreamServer = grpc.BidiStreamingServer[Result, Match]
+func _DETF_SendResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Result)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DETFServer).SendResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DETF_SendResult_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DETFServer).SendResult(ctx, req.(*Result))
+	}
+	return interceptor(ctx, in, info, handler)
+}
 
 // DETF_ServiceDesc is the grpc.ServiceDesc for DETF service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -102,14 +144,16 @@ type DETF_StreamServer = grpc.BidiStreamingServer[Result, Match]
 var DETF_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "protocol.DETF",
 	HandlerType: (*DETFServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "Stream",
-			Handler:       _DETF_Stream_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
+			MethodName: "RequestMatch",
+			Handler:    _DETF_RequestMatch_Handler,
+		},
+		{
+			MethodName: "SendResult",
+			Handler:    _DETF_SendResult_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "api/protocol.proto",
 }

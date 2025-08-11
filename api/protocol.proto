@@ -4,19 +4,29 @@ package protocol;
 option go_package = "/protocol";
 
 service DETF {
-  rpc Stream(stream Result) returns (stream Match) {}
+  rpc RequestMatch(Empty) returns (Match) {}
+  rpc SendResult(Result) returns (Empty) {}
+}
+
+message Empty {
+
+}
+
+message Engine {
+  string Repo = 1;
+  string Ref  = 2;
 }
 
 message Match {
-  string Repo = 1;
-  string Ref  = 2;
-  string Pos  = 3;
-  bool   Turn = 4;
+  Engine Baseline  = 1;
+  Engine Candidate = 2;
+  string Pos       = 3;
+  bool   Turn      = 4;
 }
 
 message Result {
-  string Repo = 1;
-  string Ref  = 2;
-  bool   Win  = 3;
-  bool   Draw = 4;
+  Engine Baseline  = 1;
+  Engine Candidate = 2;
+  bool   Win       = 3;
+  bool   Draw      = 4;
 }

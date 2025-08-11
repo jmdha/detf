@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 	"net"
-	"io"
 	"fmt"
+	"context"
 
 	"google.golang.org/grpc"
 	pb "detf/api"
@@ -14,52 +14,17 @@ type Server struct {
 	pb.UnimplementedDETFServer
 }
 
-func SendMatch(
-	stream pb.DETF_StreamServer,
-) error {
+func (s *Server) RequestMatch(_ context.Context, in *pb.Empty) (*pb.Match, error) {
 	match, err := NextMatch()
 	if err != nil {
-		return err
+		return &pb.Match {}, err
 	}
-	stream.Send(&pb.Match {
-		Repo: match.repo,
-		Ref:  match.ref,
-		Pos:  match.pos,
-		Turn: match.turn,
-	})
-	return nil
+	return &match, nil
 }
 
-func (s *Server) Stream(
-	stream pb.DETF_StreamServer,
-) error {
-	{
-		err := SendMatch(stream)
-		if err != nil {
-			return err
-		}
-	}
-	for {
-		in, err := stream.Recv()
-		if err == io.EOF {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		HandleResult(Result {
-			repo: in.GetRepo(),
-			ref:  in.GetRef(),
-			win:  in.GetWin(),
-			draw: in.GetDraw(),
-		})
-		{
-			err := SendMatch(stream)
-			if err != nil {
-				return err
-			}
-		}
-	}
+func (s *Server) SendResult(_ context.Context, in *pb.Result) (*pb.Empty, error) {
+	HandleResult(*in)
+	return &pb.Empty {}, nil
 }
 
 func ServerStart(port int) {
