@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"fmt"
 	"sync"
 	"path"
 	"os"
@@ -33,13 +34,13 @@ func Clone(repo string, ref string, dir string) (string, error) {
 	name := dirs[0].Name()
 	cmd = exec.Command("git", "checkout", ref)
 	cmd.Dir = path.Join(dir, name)
-	if out, err := cmd.Output(); err != nil {
-		return "", errors.New(string(out))
+	if _, err := cmd.Output(); err != nil {
+		return "", errors.New(fmt.Sprintf("Could not checkout %s - %s in dir %s", repo, ref, path.Join(dir, name)))
 	}
 	cmd = exec.Command("make")
 	cmd.Dir = path.Join(dir, name)
-	if out, err := cmd.Output(); err != nil {
-		return "", errors.New(string(out))
+	if _, err := cmd.Output(); err != nil {
+		return "", errors.New("Could not build")
 	}
 	return path.Join(path.Join(dir, name), name), nil
 }

@@ -28,23 +28,18 @@ func HandleResult(res pb.Result) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if res.Win == res.Draw {
-		log.Printf("Received invalid result")
-		return
-	}
-
 	idx, err := TestIndex(*res.GetBaseline(), *res.GetCandidate())
 	if err != nil {
 		log.Printf("Received result from unknown test")
 		return
 	}
 
-	if res.Win {
-		tests[idx].wins += 1
-	}
-
 	if res.Draw {
 		tests[idx].draws += 1
+	} else if res.Win {
+		tests[idx].wins   += 1
+	} else {
+		tests[idx].losses += 1
 	}
 }
 
@@ -52,16 +47,16 @@ func NextMatch() (pb.Match, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	for _, test := range tests {
-		if !test.active {
+	for i := 0; i < len(tests); i++ {
+		if !tests[i].active {
 			continue
 		}
-		pos       := book[test.book - test.book % 2]
-		turn      := test.book % 2 == 0
-		test.book += 1
+		pos       := book[tests[i].book - tests[i].book % 2]
+		turn      := tests[i].book % 2 == 0
+		tests[i].book += 1
 		return pb.Match {
-			Baseline:  &test.baseline,
-			Candidate: &test.candidate,
+			Baseline:  &tests[i].baseline,
+			Candidate: &tests[i].candidate,
 			Pos:       pos,
 			Turn:      turn,
 		}, nil
