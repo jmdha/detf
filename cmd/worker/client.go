@@ -4,6 +4,8 @@ import (
 	"log"
 	"context"
 	"time"
+	"errors"
+	"fmt"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -34,13 +36,17 @@ func SendResult(res pb.Result) {
 	}
 }
 
-func InitClient(ip string) {
+func InitClient(ip string) error {
 	conn, err := grpc.NewClient(
 		ip,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalf("Failed to connect to server with error: %v", err)
+		return errors.New(
+			fmt.Sprintf("Failed to connect to server with error: %v", err),
+		)
 	}
 	client = pb.NewDETFClient(conn)
+	log.Printf("Connected")
+	return nil
 }

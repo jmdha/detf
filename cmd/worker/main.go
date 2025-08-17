@@ -19,7 +19,10 @@ func main() {
 	flag.Parse()
 
 	// Initialize
-	InitClient(ip)
+	for err := InitClient(ip); err != nil; {
+		log.Printf("%v", err)
+		time.Sleep(10 * time.Second)
+	}
 
 	// Start processes
 	for range processes {
