@@ -141,9 +141,9 @@ func PrintStatus() {
 
 func SchedulerStart(repo string) {
 	for {
-		// Sleep to avoid sending too many requests
-		time.Sleep(10 * time.Second)
 		CheckRefStatus(repo)
 		PrintStatus()
+		// Sleep to avoid sending too many requests
+		time.Sleep(10 * time.Second)
 	}
 }
