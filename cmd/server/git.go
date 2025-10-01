@@ -20,6 +20,9 @@ func FetchRefs(repo string, filter string) ([]string, error) {
 
 	lines := strings.Split(strings.TrimSuffix(string(eout), "\n"), "\n")
 	for _, ref := range lines {
+		if len(ref) == 0 {
+			continue
+		}
 		out = append(out, ref)
 	}
 

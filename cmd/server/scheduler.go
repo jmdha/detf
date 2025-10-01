@@ -11,7 +11,6 @@ import (
 type Test struct {
 	baseline  pb.Engine
 	candidate pb.Engine
-	active bool
 
 	book   uint
 	wins   uint
@@ -46,9 +45,6 @@ func NextMatch() (pb.Match, error) {
 	defer mu.Unlock()
 
 	for i := 0; i < len(tests); i++ {
-		if !tests[i].active {
-			continue
-		}
 		pos       := book[tests[i].book - tests[i].book % 2]
 		turn      := tests[i].book % 2 == 0
 		tests[i].book += 1
@@ -74,9 +70,8 @@ func TestIndex(baseline pb.Engine, candidate pb.Engine) (int, error) {
 	return 0, errors.New("Test not found")
 }
 
-func TestsContain(baseline pb.Engine, candidate pb.Engine) bool {
-	_, err := TestIndex(baseline, candidate)
-	return err == nil
+func Remove(slice []Test, s int) []Test {
+    return append(slice[:s], slice[s+1:]...)
 }
 
 func CheckRefStatus(repo string) {
@@ -90,10 +85,13 @@ func CheckRefStatus(repo string) {
 		log.Printf("Failed to fetch prs: %v", err)
 		return
 	}
+	found := make([]bool, len(tests))
 	for _, ref := range prs {
 		baseline  := pb.Engine { Repo: repo, Ref: head }
 		candidate := pb.Engine { Repo: repo, Ref: ref }
-		if TestsContain(baseline, candidate) {
+		idx, err := TestIndex(baseline, candidate) 
+		if err == nil {
+			found[idx] = true
 			continue
 		}
 		log.Printf("Found new repo ref %s - %s", repo, ref)
@@ -101,17 +99,22 @@ func CheckRefStatus(repo string) {
 		tests = append(tests, Test {
 			baseline:  baseline,
 			candidate: candidate,
-			active:    true,
 		})
 		mu.Unlock()
 	}
+	mu.Lock()
+	for i := len(found) - 1; i >= 0; i-- {
+		if !found[i] {
+			tests = Remove(tests, i)
+		}
+	}
+	mu.Unlock()
 }
 
 func PrintStatus() {
 	for _, test := range tests {
 		log.Printf(
-			"%s - %s: Total: %d W: %d L: %d D: %d",
-			test.candidate.GetRepo(),
+			"%s: Total: %d W: %d L: %d D: %d",
 			test.candidate.GetRef(),
 			test.wins + test.losses + test.draws,
 			test.wins,
