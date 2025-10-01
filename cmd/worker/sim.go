@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"time"
 	pb "detf/api"
 
-	"github.com/notnil/chess"
-	"github.com/notnil/chess/uci"
+	"github.com/corentings/chess/v2"
+	"github.com/corentings/chess/v2/uci"
 )
 
 func Sim(match pb.Match) (pb.Result, error) {
@@ -27,15 +28,13 @@ func Sim(match pb.Match) (pb.Result, error) {
 	}
 
 	game := chess.NewGame(fen)
-	init := game.Position().Turn()
+	init := game.CurrentPosition().Turn()
 	for game.Outcome() == chess.NoOutcome {
 		cPos := uci.CmdPosition { Position: game.Position() }
-		cGo  := uci.CmdGo { MoveTime: time.Second }
-
-		turn := game.Position().Turn() == init
+		cGo  := uci.CmdGo { MoveTime: time.Second / 100 }
 
 		var move chess.Move
-		if turn {
+		if game.Position().Turn() == init {
 			if err := baseline.Run(cPos, cGo); err != nil {
 				return pb.Result {}, err
 			}
@@ -45,15 +44,19 @@ func Sim(match pb.Match) (pb.Result, error) {
 				return pb.Result {}, err
 			}
 			move = *candidate.SearchResults().BestMove
-		}
-		
-		if err := game.Move(&move); err != nil {
+		}	
+
+		if err := game.Move(&move, nil); err != nil {
 			return pb.Result {}, err
 		}
 	}
 	
-	win  := game.Position().Turn() == init
+	fmt.Println(game.String())
+
 	draw := game.Outcome() == chess.Draw
+	iwin := game.Outcome() == chess.WhiteWon && init == chess.White ||
+	        game.Outcome() == chess.BlackWon && init == chess.Black
+	win  := (match.GetTurn() && iwin) || (!match.GetTurn() && !iwin)
 
 	return pb.Result {
 		Baseline:  match.GetBaseline(),
