@@ -5,8 +5,6 @@ import (
 	"time"
 	"log"
 	"errors"
-	"strings"
-	"os/exec"
 	pb "detf/api"
 )
 
@@ -79,27 +77,6 @@ func TestIndex(baseline pb.Engine, candidate pb.Engine) (int, error) {
 func TestsContain(baseline pb.Engine, candidate pb.Engine) bool {
 	_, err := TestIndex(baseline, candidate)
 	return err == nil
-}
-
-func FetchRefs(repo string) (string, []string, error) {
-	// Find master ref
-	out_m, err := exec.Command("git", "ls-remote", repo, "HEAD").Output()
-	if err != nil {
-		return "", nil, err
-	}
-	master := strings.Fields(string(out_m))[0][0:6]
-
-	// Find PR refs
-	out_r, err := exec.Command("git", "ls-remote", repo, "pull/*/head").Output()
-	if err != nil {
-		return "", nil, err
-	}
-	lines := strings.Split(strings.TrimSuffix(string(out_r), "\n"), "\n")
-	refs  := make([]string, len(lines))
-	for i, line := range lines {
-		refs[i] = strings.Fields(line)[0][0:6]
-	}
-	return master, refs, nil
 }
 
 func CheckRefStatus(repo string) {
