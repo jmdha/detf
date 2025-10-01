@@ -80,13 +80,18 @@ func TestsContain(baseline pb.Engine, candidate pb.Engine) bool {
 }
 
 func CheckRefStatus(repo string) {
-	master, refs, err := FetchRefs(repo)
+	head, err := FetchHead(repo)
 	if err != nil {
-		log.Printf("Failed to retrieve repo refs: %v", err)
+		log.Printf("Failed to fetch head: %v", err)
 		return
 	}
-	for _, ref := range refs {
-		baseline  := pb.Engine { Repo: repo, Ref: master }
+	prs, err := FetchPRs(repo)
+	if err != nil {
+		log.Printf("Failed to fetch prs: %v", err)
+		return
+	}
+	for _, ref := range prs {
+		baseline  := pb.Engine { Repo: repo, Ref: head }
 		candidate := pb.Engine { Repo: repo, Ref: ref }
 		if TestsContain(baseline, candidate) {
 			continue
