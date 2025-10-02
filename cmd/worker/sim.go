@@ -30,7 +30,7 @@ func Sim(match pb.Match) (pb.Result, error) {
 	init := game.Position().Turn()
 	for game.Outcome() == chess.NoOutcome {
 		cPos := uci.CmdPosition { Position: game.Position() }
-			cGo  := uci.CmdGo { MoveTime: time.Second }
+		cGo  := uci.CmdGo { MoveTime: time.Second / 10 }
 
 		var move chess.Move
 		if match.GetTurn() && game.Position().Turn() == init {
