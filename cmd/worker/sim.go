@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 	pb "detf/api"
 
@@ -26,15 +25,15 @@ func Sim(match pb.Match) (pb.Result, error) {
 	if err != nil {
 		return pb.Result {}, err
 	}
-
 	game := chess.NewGame(fen)
-	init := game.CurrentPosition().Turn()
+
+	init := game.Position().Turn()
 	for game.Outcome() == chess.NoOutcome {
 		cPos := uci.CmdPosition { Position: game.Position() }
-		cGo  := uci.CmdGo { MoveTime: time.Second / 100 }
+			cGo  := uci.CmdGo { MoveTime: time.Second }
 
 		var move chess.Move
-		if game.Position().Turn() == init {
+		if match.GetTurn() && game.Position().Turn() == init {
 			if err := baseline.Run(cPos, cGo); err != nil {
 				return pb.Result {}, err
 			}
@@ -51,11 +50,9 @@ func Sim(match pb.Match) (pb.Result, error) {
 		}
 	}
 	
-	fmt.Println(game.String())
-
 	draw := game.Outcome() == chess.Draw
-	iwin := game.Outcome() == chess.WhiteWon && init == chess.White ||
-	        game.Outcome() == chess.BlackWon && init == chess.Black
+	iwin := (init == chess.White && game.Outcome() == chess.WhiteWon) ||
+	        (init == chess.Black && game.Outcome() == chess.BlackWon)
 	win  := (match.GetTurn() && iwin) || (!match.GetTurn() && !iwin)
 
 	return pb.Result {
